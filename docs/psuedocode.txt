@@ -1,0 +1,33 @@
+PsuedoCode is written to Code2Flow specifications (https://app.code2flow.com/) for allowing quick and easy generation of Flowcharts
+
+function CreateMaze{
+  <Randomly Select Position along Edge of Grid as Maze Startpoint,
+  and a Second Position along Edge of Grid as Maze Endpoint.>;
+  <Create Stack of Grid points, push Maze Startpoint>;
+  while(The Stack has Squares in it){
+    while(There are unvisited squares Adjacent to top Square of Stack){
+      |Randomly Select Adjacent unvisited Square, Push it to top of Stack,
+      and Mark the sides between the two squares as unblocked|;
+    }
+    !Pop a Square from the Stack|
+  }
+  (End Function);
+}
+
+function NavigateMaze{
+  Begin Function;
+}
+
+/* The first two arrays in Grid represent a position within a grid. 
+The third array is an octal value representing which sides of the grid are blocked/unblocked.
+The Forth Array represents if the location is endpoint of the Maze*/
+Begin;
+Declare 4-Array Nested Array "Grid";
+/Prompt user for X and Y dimensions of Grid/;
+| Set Grid size equal to prompted dimensions and initialize each square's edges|;
+call CreateMaze;
+
+|Set Grid equal to created Maze|;
+
+call NavigateMaze;
+(End);
