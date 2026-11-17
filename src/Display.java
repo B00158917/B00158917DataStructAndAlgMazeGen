@@ -4,7 +4,7 @@ public final class Display {
             for(byte b : a){
                 System.out.printf(" %x ", b);
             }
-            System.out.println("");
+            System.out.println();
         }
     }
 }
