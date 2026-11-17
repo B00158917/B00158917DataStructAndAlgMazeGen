@@ -1,4 +1,4 @@
-PsuedoCode is written to Code2Flow specifications (https://app.code2flow.com/) for allowing quick and easy generation of Flowcharts
+PsuedoCode is written to Code2Flow specifications (https://app.code2flow.com/) for allowing quick and easy generation of Flowcharts.
 
 function CreateMaze{
   <Randomly Select Position along Edge of Grid as Maze Startpoint,
