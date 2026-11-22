@@ -18,39 +18,90 @@ public class App {
     public static int[] endPos = new int[2];
     public static Random random = new Random();
     public static JFrame frame;
+    public static ArrayList<int[]> searchQueue = new ArrayList<int[]>();
+    public static ArrayList<int[]> searchHistory = new ArrayList<int[]>();
+    
     public static void main(String[] args) throws Exception {
         frame = new JFrame();
         frame.setSize(720, 720);
-        new Thread() {
-            public void run(){
-                input = new Scanner(System.in);
-                System.out.println("Input Maze X Axis Size:");
-                int x = readInt();
-                System.out.println("Input Maze Y Axis Size:");
-                int y = readInt();
-                grid = new int[y][x];
-                for(int[] b : grid)
-                    Arrays.fill(b, (byte)0);
-                try {
-                    displayGrid(grid);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                try {
-                    GenerateMaze();
-                } catch (InvocationTargetException | InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }.start();;
+        input = new Scanner(System.in);
+        System.out.println("Input Maze X Axis Size:");
+        int x = readInt();
+        System.out.println("Input Maze Y Axis Size:");
+        int y = readInt();
+        grid = new int[y][x];
+        for(int[] b : grid)
+            Arrays.fill(b, (byte)0);
+        try {
+            displayGrid(grid);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            GenerateMaze();
+        } catch (InvocationTargetException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        SearchMaze();
     }
 
-    private static void GenerateMaze() throws InterruptedException, InvocationTargetException{
-        for(int i = 0; i < 255; i++){
-            startPos = generateEdgePos();
+    private static void SearchMaze(){
+        searchQueue.add(startPos);
+        while(!isEndInQueue()){
+            System.out.println("a");
+            int[] queueFirst = searchQueue.getFirst();
+            System.out.println(queueFirst[0] + " " + queueFirst[1]);
+            int val = grid[queueFirst[0]][queueFirst[1]];
+            if(val % 2 == 1){
+                int[] toAdd = {queueFirst[0] + 1, queueFirst[1]};
+                if(!isPosSearched(toAdd))
+                    searchQueue.add(toAdd);
+            }
+            val /= 2;
+            if(val % 2 == 1){
+                int[] toAdd = {queueFirst[0] - 1, queueFirst[1]};
+                if(!isPosSearched(toAdd))
+                    searchQueue.add(toAdd);
+            }
+            val /= 2;
+            if(val % 2 == 1){
+                int[] toAdd = {queueFirst[0], queueFirst[1] + 1};
+                if(!isPosSearched(toAdd))
+                    searchQueue.add(toAdd);
+            }
+            val /= 2;
+            if(val % 2 == 1){
+                int[] toAdd = {queueFirst[0], queueFirst[1] - 1};
+                if(!isPosSearched(toAdd))
+                    searchQueue.add(toAdd);
+            }
+            searchHistory.add(queueFirst);
+            searchQueue.remove(queueFirst);
+            try {
+                displayGrid(grid);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private static boolean isPosSearched(int[] pos){
+        for(int[] a : searchHistory){
+            if(pos[0] == a[0] && pos[1] == a[1])
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean isEndInQueue(){
+        for(int[] a: searchQueue) {
+            if(a[0] == endPos[0] && a[1] == endPos[1])
+                return true;
+        }
+        return false;
+    }
+    private static void GenerateMaze() throws InterruptedException, InvocationTargetException{
+        startPos = generateEdgePos();
         endPos = generateEdgePos();
         
         ArrayList<int[]> posStack = new ArrayList<int[]>();
@@ -156,6 +207,16 @@ public class App {
                     for(int x = 0; x < grid[1].length; x++){
                         int xMult = x*8;
                         int yMult = y*8;
+                        if(endPos[0] == y & endPos[1] == x){
+                            g2.setColor(Color.RED);
+                            g2.fillRect(xMult, yMult, 8, 8);
+                        }
+                        g2.setColor(Color.BLUE);
+                        for(int[] a: searchQueue){
+                            if(a[0] == y && a[1] == x){
+                                g2.fillRect(xMult, yMult, 8, 8);
+                            }
+                        }
                         g2.setColor(Color.BLACK);
                         g2.drawRect(xMult, yMult, 8, 8);
                         g2.setColor(Color.WHITE);
@@ -175,12 +236,13 @@ public class App {
                         if(currSquare % 2 == 1){
                             g2.drawLine(xMult, yMult, xMult, yMult+8);
                         }
+                        
                     }
                 }
             }
         });
         frame.setVisible(true);
         
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(200);
     }
 }
